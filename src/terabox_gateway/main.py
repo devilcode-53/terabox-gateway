@@ -1,3 +1,21 @@
+import asyncio
+from functools import wraps
+from flask import Flask
+
+
+# Patch Flask to handle async view functions using standard asyncio
+def _safe_async_to_sync(self, func):
+
+  @wraps(func)
+  def wrapper(*args, **kwargs):
+    return asyncio.run(func(*args, **kwargs))
+
+  return wrapper
+
+
+Flask.async_to_sync = _safe_async_to_sync
+
+
 import os
 import sys
 import argparse
